@@ -1,3 +1,5 @@
+// original: https://skillbox.ru/lectoriy/code/pishem-svoi-di-konteiner-na-java121220/
+
 package org.example;
 
 import org.example.client.NewYearOrganizer;

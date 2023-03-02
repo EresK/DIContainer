@@ -41,5 +41,10 @@ bin/
 ### Mac OS ###
 .DS_Store
 
+.idea/
+gradle/
 src/main/java/org/application/
 src/main/java/org/di/
+
+gradlew
+gradlew.bat

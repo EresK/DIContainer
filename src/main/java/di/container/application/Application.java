@@ -8,7 +8,7 @@ public class Application {
     }
 
     public static void main(String[] args) throws Exception {
-        ApplicationContext context = new ApplicationContext("");
+        ApplicationContext context = new ApplicationContext("src/main/resources/app-config.json");
 
         Application app1 = (Application) context.getBean("app");
         Application app2 = (Application) context.getBean("app");

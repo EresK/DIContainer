@@ -6,14 +6,14 @@ import java.util.List;
 
 @Getter
 public class ListableBean {
-    private final List<Bean> beanList;
+    private final List<BeanDefinition> beanList;
 
-    public ListableBean (List<Bean> beanList) {
+    public ListableBean (List<BeanDefinition> beanList) {
         this.beanList = beanList;
     }
 
-    public Bean getBeanByName(String name) throws Exception {
-        List<Bean> beans = beanList.stream().filter(bean -> bean.getBeanName().equals(name)).toList();
+    public BeanDefinition getBeanByName(String name) throws Exception {
+        List<BeanDefinition> beans = beanList.stream().filter(bean -> bean.getBeanName().equals(name)).toList();
 
         if (beans.size() != 1)
             throw new Exception(String.format("There are %d beans with name: %s", beans.size(), name));
@@ -21,8 +21,8 @@ public class ListableBean {
         return beans.stream().findFirst().get();
     }
 
-    public Bean getBeanByType(Class<?> requiredType) throws Exception {
-        List<Bean> beans = beanList.stream().filter(bean -> bean.getBeanClass() == requiredType).toList();
+    public BeanDefinition getBeanByType(Class<?> requiredType) throws Exception {
+        List<BeanDefinition> beans = beanList.stream().filter(bean -> bean.getBeanClass() == requiredType).toList();
 
         if (beans.size() != 1)
             throw new Exception(String.format("There are %d beans of class: %s", beans.size(), requiredType));

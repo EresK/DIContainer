@@ -3,7 +3,7 @@ package di.container.beans;
 import di.container.scope.Scope;
 
 public class BeanBuilder {
-    private Bean bean;
+    private BeanDefinition bean;
 
     public BeanBuilder() {
         bean = new Bean();
@@ -24,24 +24,19 @@ public class BeanBuilder {
         return this;
     }
 
+    public BeanBuilder setPrimary(boolean primary) {
+        bean.setPrimary(primary);
+        return this;
+    }
+
     public BeanBuilder setLazyInit(boolean lazyInit) {
         bean.setLazyInit(lazyInit);
         return this;
     }
 
-    public BeanBuilder setFactoryBeanName(String factoryBeanName) {
-        bean.setFactoryBeanName(factoryBeanName);
-        return this;
-    }
-
-    public BeanBuilder setFactoryMethodName(String factoryMethodName) {
-        bean.setFactoryMethodName(factoryMethodName);
-        return this;
-    }
-
-    public Bean build() {
-        Bean beanToReturn = bean;
+    public BeanDefinition build() {
+        BeanDefinition beanDefinition = bean;
         bean = new Bean();
-        return beanToReturn;
+        return beanDefinition;
     }
 }

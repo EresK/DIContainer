@@ -1,40 +1,147 @@
 package di.container.beans;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import di.container.configuration.ArgumentValue;
 import di.container.scope.Scope;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+import java.util.ArrayList;
+import java.util.List;
+
+@AllArgsConstructor
 @NoArgsConstructor
-public class Bean {
+public class Bean implements BeanDefinition {
     private String beanName;
     private Class<?> beanClass;
     private Scope beanScope = Scope.SINGLETON;
+    private boolean primary = false;
     private boolean lazyInit = false;
 
-    private String factoryBeanName;
-    private String factoryMethodName;
+    private List<ArgumentValue> constructorArguments = new ArrayList<>();
+    private List<ArgumentValue> propertyArguments = new ArrayList<>();
 
     public Bean(String beanName, Class<?> beanClass) {
         this.beanName = beanName;
         this.beanClass = beanClass;
     }
 
-    public boolean hasFactoryBean() {
-        return factoryBeanName != null && !factoryBeanName.equals("");
+    /* GETTERS */
+
+    @JsonGetter("name")
+    @Override
+    public String getBeanName() {
+        return beanName;
     }
 
+    @JsonGetter("class")
+    @Override
+    public Class<?> getBeanClass() {
+        return beanClass;
+    }
+
+    @JsonIgnore
+    @Override
+    public Scope getBeanScope() {
+        return beanScope;
+    }
+
+    @JsonGetter("scope")
+    public String getBeanScopeValue() {
+        return beanScope.getScopeValue();
+    }
+
+    @JsonGetter("primary")
+    @Override
+    public boolean isPrimary() {
+        return primary;
+    }
+
+    @JsonGetter("lazy-init")
+    @Override
+    public boolean isLazyInit() {
+        return lazyInit;
+    }
+
+    @JsonGetter("constructor-args")
+    @Override
+    public List<ArgumentValue> getConstructorArguments() {
+        return constructorArguments;
+    }
+
+    @JsonGetter("property-args")
+    @Override
+    public List<ArgumentValue> getPropertyArguments() {
+        return propertyArguments;
+    }
+
+    /* SETTERS */
+
+    @JsonSetter("name")
+    @Override
+    public void setBeanName(String name) {
+        beanName = name;
+    }
+
+    @JsonSetter("class")
+    @Override
+    public void setBeanClass(Class<?> clazz) {
+        beanClass = clazz;
+    }
+
+    @JsonIgnore
+    @Override
+    public void setBeanScope(Scope scope) {
+        beanScope = scope;
+    }
+
+    @JsonSetter("scope")
+    public void setBeanScopeValue(String scope) {
+        beanScope = Scope.getScope(scope);
+    }
+
+    @JsonSetter("primary")
+    @Override
+    public void setPrimary(boolean primary) {
+        this.primary = primary;
+    }
+
+    @JsonSetter("lazy-init")
+    @Override
+    public void setLazyInit(boolean lazyInit) {
+        this.lazyInit = lazyInit;
+    }
+
+    /* OTHER METHODS */
+
+    @JsonIgnore
+    @Override
     public boolean isSingleton() {
         return beanScope == Scope.SINGLETON;
     }
 
+    @JsonIgnore
+    @Override
     public boolean isPrototype() {
         return beanScope == Scope.PROTOTYPE;
     }
 
+    @JsonIgnore
+    @Override
     public boolean isThread() {
         return beanScope == Scope.THREAD;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getDescription() {
+        return String.format("name: %s%n" +
+                        "class: %s%n" +
+                        "scope: %s%n" +
+                        "primary: %s%n" +
+                        "lazy-init: %s",
+                beanName, beanClass, beanScope.getScopeValue(), primary, lazyInit);
     }
 }

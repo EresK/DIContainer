@@ -1,11 +1,13 @@
 package di.container.beans;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import di.container.configuration.ArgumentValue;
 import di.container.scope.Scope;
 
 import java.util.List;
 
+@JsonSerialize(as = Bean.class)
 @JsonDeserialize(as = Bean.class)
 public interface BeanDefinition {
     /* GETTERS */

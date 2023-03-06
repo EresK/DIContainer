@@ -1,7 +1,9 @@
 package di.container.configuration;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonSerialize(as = CommonArgument.class)
 @JsonDeserialize(as = CommonArgument.class)
 public interface ArgumentValue {
     /* GETTERS */

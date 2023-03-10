@@ -7,6 +7,9 @@ public class Application {
     public Application() {
     }
 
+    public Application(Logger logger) {
+    }
+
     public static void main(String[] args) throws Exception {
         ApplicationContext context = new ApplicationContext("src/main/resources/app-config.json");
 

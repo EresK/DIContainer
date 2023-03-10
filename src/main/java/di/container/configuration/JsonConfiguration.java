@@ -1,9 +1,6 @@
 package di.container.configuration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import di.container.beans.Bean;
 import di.container.beans.BeanDefinition;
 
 import java.io.File;
@@ -26,8 +23,10 @@ public class JsonConfiguration implements Configuration {
     }
 
     private List<BeanDefinition> deserialize() throws IOException {
-        Bean[] beans = mapper.readValue(new File(configurationPath), Bean[].class);
-
-        return Arrays.stream(beans).map(bean -> (BeanDefinition) bean).toList();
+        // TODO: check that if there is singleton bean of some class
+        //  there are no another prototype or thread beans of such class
+        // TODO: add cyclic dependencies detector
+        BeanDefinition[] beans = mapper.readValue(new File(configurationPath), BeanDefinition[].class);
+        return Arrays.stream(beans).toList();
     }
 }

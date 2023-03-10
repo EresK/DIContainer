@@ -2,25 +2,26 @@ package di.container.context;
 
 import di.container.beans.BeanDefinition;
 import di.container.beans.ListableBean;
+import di.container.beans.factory.BeanFactory;
 import di.container.configuration.Configuration;
 import di.container.configuration.JsonConfiguration;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationContext {
+    private BeanFactory beanFactory;
     private Configuration configuration;
     private ListableBean listableBean;
-    private final Map<Class<?>, Object> classObjectMap;
+    private final Map<Class<?>, Object> classObjectMap = new ConcurrentHashMap<>();
 
     public ApplicationContext() {
-        classObjectMap = new HashMap<>();
         // TODO: run classpath scanner
     }
 
     public ApplicationContext(String configurationPath) throws Exception {
         this();
+        beanFactory = new BeanFactory(this);
         configuration = new JsonConfiguration(configurationPath);
         listableBean = new ListableBean(configuration.getBeanDefinitions());
         preInitialization();
@@ -28,41 +29,30 @@ public class ApplicationContext {
 
     public <T> T getBean(Class<T> requiredType) throws Exception {
         BeanDefinition bean = listableBean.getBeanByType(requiredType);
-        return (T) getObjectByBean(bean);
+        return (T) getObjectByBeanDefinition(bean);
     }
 
     public <T> T getBean(Class<T> requiredType, Object... args) throws Exception {
         BeanDefinition bean = listableBean.getBeanByType(requiredType);
-        return (T) getObjectByBean(bean, args);
+        return (T) getObjectByBeanDefinition(bean, args);
     }
 
     public Object getBean(String name) throws Exception {
         BeanDefinition bean = listableBean.getBeanByName(name);
-        return getObjectByBean(bean);
+        return getObjectByBeanDefinition(bean);
     }
 
     public Object getBean(String name, Object... args) throws Exception {
         BeanDefinition bean = listableBean.getBeanByName(name);
-        return getObjectByBean(bean, args);
+        return getObjectByBeanDefinition(bean, args);
     }
 
-    private Object getObjectByBean(BeanDefinition bean, Object... args) throws Exception {
-        Object obj;
+    private Object getObjectByBeanDefinition(BeanDefinition bean, Object... args) throws Exception {
+        if (bean.isSingleton() && classObjectMap.containsKey(bean.getBeanClass()))
+            return classObjectMap.get(bean.getBeanClass());
 
-        // Check singleton is in map
-        if (bean.isSingleton() && ((obj = classObjectMap.get(bean.getBeanClass())) != null))
-            return obj;
+        Object obj = beanFactory.getInstance(bean);
 
-        // Common part of creating instances
-        if (args.length > 0) {
-            var parameterTypes = Arrays.stream(args).map(Object::getClass).toList();
-            obj = bean.getBeanClass().getDeclaredConstructor(parameterTypes.toArray(new Class[0])).newInstance(args);
-        }
-        else {
-            obj = bean.getBeanClass().getDeclaredConstructor().newInstance();
-        }
-
-        // Add singleton instance to map
         if (bean.isSingleton())
             classObjectMap.put(bean.getBeanClass(), obj);
 
@@ -70,9 +60,9 @@ public class ApplicationContext {
     }
 
     private void preInitialization() throws Exception {
-        for (BeanDefinition bean: listableBean.getBeanList()) {
+        for (BeanDefinition bean : listableBean.getBeanList()) {
             if (bean.isSingleton() && !bean.isLazyInit())
-                getObjectByBean(bean);
+                getObjectByBeanDefinition(bean);
         }
     }
 }

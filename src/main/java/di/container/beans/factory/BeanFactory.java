@@ -6,19 +6,35 @@ import di.container.context.ApplicationContext;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BeanFactory {
     private final ApplicationContext applicationContext;
+    private final Map<Class<?>, Object> classObjectMap = new ConcurrentHashMap<>();
 
     public BeanFactory(ApplicationContext context) {
         applicationContext = context;
     }
 
-    public Object getInstance(BeanDefinition beanDefinition) throws Exception {
+    public Object getInstance(BeanDefinition bean) throws Exception {
+        if (bean.isSingleton() && classObjectMap.containsKey(bean.getBeanClass()))
+            return classObjectMap.get(bean.getBeanClass());
+
+        Object instance = constructInstance(bean);
+
+        if (bean.isSingleton())
+            classObjectMap.put(bean.getBeanClass(), instance);
+
+        injectDependencies(bean, instance);
+
+        return instance;
+    }
+
+    private Object constructInstance(BeanDefinition beanDefinition) throws Exception {
         Object instance;
 
         /* Gets instance and sets constructor arguments */
-        var constructorArgs = valuesToList(beanDefinition.getConstructorArguments());
+        var constructorArgs = argumentValuesToList(beanDefinition.getConstructorArguments());
         var constructorArgsClasses = constructorArgs.stream().map(Object::getClass).toList().toArray(new Class[0]);
 
         if (constructorArgs.size() > 0) {
@@ -31,45 +47,50 @@ public class BeanFactory {
             instance = beanDefinition.getBeanClass().getDeclaredConstructor().newInstance();
         }
 
-        /* Sets property arguments */
-        Map<String, Field> fieldMap = new HashMap<>();
-
-        for (Field filed : beanDefinition.getBeanClass().getDeclaredFields())
-            fieldMap.put(filed.getName(), filed);
-
-        for (ArgumentValue arg : beanDefinition.getPropertyArguments()) {
-            if (!fieldMap.containsKey(arg.getName()))
-                throw new NoSuchFieldException(String.format(
-                        "There is no field %s in class %s",
-                        arg.getName(),
-                        beanDefinition.getBeanClass()));
-
-            Field field = fieldMap.get(arg.getName());
-
-            field.setAccessible(true);
-            field.set(instance, valueToObject(arg));
-        }
-
         return instance;
     }
 
-    private List<Object> valuesToList(List<ArgumentValue> argList) throws Exception {
+    private void injectDependencies(BeanDefinition bean, Object instance) throws Exception {
+        /* Sets property arguments */
+        Map<String, Field> fieldMap = new HashMap<>();
+
+        for (Field filed : bean.getBeanClass().getDeclaredFields())
+            fieldMap.put(filed.getName(), filed);
+
+        for (ArgumentValue arg : bean.getPropertyArguments()) {
+            if (!arg.isCorrect())
+                throw new IllegalStateException("Argument has incorrect state: " + arg);
+            else if ((arg.isBeanReference() && !fieldMap.containsKey(arg.getBeanReference())) ||
+                    (!arg.isBeanReference() && !fieldMap.containsKey(arg.getName())))
+                throw new NoSuchFieldException(String.format(
+                        "There is no field %s in class %s",
+                        arg.getName(),
+                        bean.getBeanClass()));
+
+            Object value = argumentValueToObject(arg);
+
+            Field field = arg.isBeanReference() ? fieldMap.get(arg.getBeanReference()) : fieldMap.get(arg.getName());
+            field.setAccessible(true);
+            field.set(instance, value);
+        }
+    }
+
+    private List<Object> argumentValuesToList(List<ArgumentValue> argList) throws Exception {
         List<Object> objects = new ArrayList<>();
 
         for (ArgumentValue arg : argList)
-            objects.add(valueToObject(arg));
+            objects.add(argumentValueToObject(arg));
 
         return objects;
     }
 
-    private Object valueToObject(ArgumentValue arg) throws Exception {
+    private Object argumentValueToObject(ArgumentValue arg) throws Exception {
         if (!arg.isCorrect())
             throw new IllegalStateException("Can not resolve is ArgumentValue bean or primitive type: " + arg);
 
         Object obj;
 
         if (arg.isBeanReference()) {
-            // TODO: fix cyclic dependencies
             obj = applicationContext.getBean(arg.getBeanReference());
         }
         else {

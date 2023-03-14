@@ -1,17 +1,17 @@
 package di.container.application;
 
 import di.container.context.ApplicationContext;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 public class Application {
 
-    public Application() {
-    }
-
-    public Application(Logger logger) {
-    }
+    private Logger logger;
 
     public static void main(String[] args) throws Exception {
-        ApplicationContext context = new ApplicationContext("src/main/resources/app-config.json");
+        ApplicationContext context = new ApplicationContext("src/main/resources/cyclic-config.json");
 
         Application app1 = (Application) context.getBean("app");
         Application app2 = (Application) context.getBean("app");
@@ -23,8 +23,7 @@ public class Application {
 
         assert logger1 != logger2;
 
-        Logger logger3 = (Logger) context.getBean("logger", app1);
-
-        assert app1 == logger3.getApp();
+        assert logger1.getApp() == app1;
+        assert logger2.getApp() == app1;
     }
 }

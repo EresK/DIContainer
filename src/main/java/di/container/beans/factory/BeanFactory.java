@@ -3,6 +3,7 @@ package di.container.beans.factory;
 import di.container.beans.BeanDefinition;
 import di.container.configuration.ArgumentValue;
 import di.container.context.ApplicationContext;
+import di.container.context.JsonApplicationContext;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -12,7 +13,7 @@ public class BeanFactory {
     private final ApplicationContext applicationContext;
     private final Map<Class<?>, Object> classObjectMap = new ConcurrentHashMap<>();
 
-    public BeanFactory(ApplicationContext context) {
+    public BeanFactory(JsonApplicationContext context) {
         applicationContext = context;
     }
 

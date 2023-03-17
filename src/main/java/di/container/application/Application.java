@@ -1,6 +1,7 @@
 package di.container.application;
 
 import di.container.context.ApplicationContext;
+import di.container.context.JsonApplicationContext;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ public class Application {
     private Logger logger;
 
     public static void main(String[] args) throws Exception {
-        ApplicationContext context = new ApplicationContext("src/main/resources/cyclic-config.json");
+        ApplicationContext context = new JsonApplicationContext("src/main/resources/cyclic-config.json");
 
         Application app1 = (Application) context.getBean("app");
         Application app2 = (Application) context.getBean("app");

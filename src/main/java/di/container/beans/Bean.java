@@ -1,8 +1,6 @@
 package di.container.beans;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.*;
 import di.container.configuration.ArgumentValue;
 import di.container.scope.Scope;
 import lombok.AllArgsConstructor;
@@ -11,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Bean implements BeanDefinition {
@@ -80,12 +79,14 @@ public class Bean implements BeanDefinition {
     /* SETTERS */
 
     @JsonSetter("name")
+    @JsonProperty(required = true)
     @Override
     public void setBeanName(String name) {
         beanName = name;
     }
 
     @JsonSetter("class")
+    @JsonProperty(required = true)
     @Override
     public void setBeanClass(Class<?> clazz) {
         beanClass = clazz;

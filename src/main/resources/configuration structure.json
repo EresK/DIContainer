@@ -1,0 +1,31 @@
+{
+    "name":"uniqueBeanName",
+    "class":"Java.Path.To.Class",
+
+    "scope": "singleton(default)/prototype/thread",
+    "primary": "true/false(default)",
+    "lazy-init": "true/false(default)",
+
+    "constructor-args": [
+        {
+            "type": "Boolean/Character/Byte/Short/Integer/Long/Float/Double/String",
+            "value": "value"
+        },
+        {
+            "type": "required.Type",
+            "ref": "yetAnotherBeanName"
+        }
+    ],
+
+    "property-args": [
+        {
+            "name": "fieldName/setFieldName",
+            "type": "Boolean/Character/Byte/Short/Integer/Long/Float/Double/String",
+            "value": "value"
+        },
+        {
+            "name": "fieldName/setFieldName",
+            "ref": "yetAnotherBeanName"
+        }
+    ]
+}

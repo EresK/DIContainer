@@ -1,4 +1,4 @@
-package di.container.configuration;
+package di.container.configuration.value;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -6,39 +6,29 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PropertyValue extends AbstractValue {
-    private final String name;
+public class ConstructorValue extends AbstractValue {
     private final Class<?> type;
     private final Object value;
     private final String beanReference;
 
-    public PropertyValue(@JsonProperty(value = "name", required = true) String name,
-                         @JsonProperty("type") Class<?> type,
-                         @JsonProperty("value") Object value,
-                         @JsonProperty("ref") String beanReference) {
-        this.name = name;
+    public ConstructorValue(@JsonProperty(value = "type", required = true) Class<?> type,
+                            @JsonProperty("value") Object value,
+                            @JsonProperty("ref") String beanReference) {
         this.type = type;
         this.value = value;
         this.beanReference = beanReference;
     }
 
-    public PropertyValue(String name, Class<?> type, Object value) {
-        this.name = name;
+    public ConstructorValue(Class<?> type, Object value) {
         this.type = type;
         this.value = value;
         beanReference = null;
     }
 
-    public PropertyValue(String name, String beanReference) {
-        this.name = name;
+    public ConstructorValue(Class<?> type, String beanReference) {
+        this.type = type;
         this.beanReference = beanReference;
-        type = null;
         value = null;
-    }
-
-    @JsonGetter("name")
-    public String getName() {
-        return name;
     }
 
     @JsonGetter("type")
@@ -61,16 +51,15 @@ public class PropertyValue extends AbstractValue {
     @JsonIgnore
     @Override
     public boolean isBeanReference() {
-        return name != null && !name.equals("") &&
+        return type != null &&
                 beanReference != null && !beanReference.equals("") &&
-                type == null && value == null;
+                value == null;
     }
 
     @JsonIgnore
     @Override
     public boolean isPrimitive() {
-        return name != null && !name.equals("") &&
-                type != null &&
+        return type != null &&
                 value != null &&
                 beanReference == null;
     }
@@ -83,6 +72,6 @@ public class PropertyValue extends AbstractValue {
 
     @Override
     public String toString() {
-        return String.format("name: %s, type: %s, value: %s, reference: %s", name, type, value, beanReference);
+        return String.format("type: %s, value: %s, reference: %s", type, value, beanReference);
     }
 }

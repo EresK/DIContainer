@@ -1,4 +1,4 @@
-package di.container.configuration;
+package di.container.configuration.value;
 
 public abstract class AbstractValue {
     public abstract Object getValue();

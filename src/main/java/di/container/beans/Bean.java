@@ -1,8 +1,8 @@
 package di.container.beans;
 
 import com.fasterxml.jackson.annotation.*;
-import di.container.configuration.ConstructorValue;
-import di.container.configuration.PropertyValue;
+import di.container.configuration.value.ConstructorValue;
+import di.container.configuration.value.PropertyValue;
 import di.container.scope.Scope;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

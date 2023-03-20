@@ -2,8 +2,8 @@ package di.container.beans;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import di.container.configuration.ConstructorValue;
-import di.container.configuration.PropertyValue;
+import di.container.configuration.value.ConstructorValue;
+import di.container.configuration.value.PropertyValue;
 import di.container.scope.Scope;
 
 import java.util.List;

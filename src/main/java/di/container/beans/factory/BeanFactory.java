@@ -1,7 +1,7 @@
 package di.container.beans.factory;
 
 import di.container.beans.BeanDefinition;
-import di.container.configuration.AbstractValue;
+import di.container.configuration.value.AbstractValue;
 import di.container.context.ApplicationContext;
 
 import java.lang.reflect.Field;

@@ -2,11 +2,12 @@ package di.container.beans.factory;
 
 import di.container.beans.BeanDefinition;
 import di.container.configuration.value.AbstractValue;
+import di.container.configuration.value.ConstructorValue;
 import di.container.context.ApplicationContext;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,56 +29,83 @@ public class BeanFactory {
         if (bean.isSingleton())
             classObjectMap.put(bean.getBeanClass(), instance);
 
-        injectDependencies(bean, instance);
+        injectSetterDependencies(bean, instance);
 
         return instance;
     }
 
-    private Object constructInstance(BeanDefinition beanDefinition) throws Exception {
-        Object instance;
+    private Object constructInstance(BeanDefinition bean) throws Exception {
+        /* Получаем типы параметров бина */
+        var beanParameters = bean.getConstructorArguments()
+                .stream()
+                .map(ConstructorValue::getType)
+                .toList()
+                .toArray(new Class[0]);
 
-        /* Gets instance and sets constructor arguments */
-        var constructorArgs = argumentValuesToList(beanDefinition.getConstructorArguments().toArray(new AbstractValue[0]));
-        var constructorArgsClasses = constructorArgs.stream().map(Object::getClass).toList().toArray(new Class[0]);
+        /* Находим все конструкторы, с таким же количеством аргументов как у бина */
+        var matchedConstructors = Arrays.stream(bean.getBeanClass().getDeclaredConstructors())
+                .filter(constructor -> constructor.getParameterCount() == beanParameters.length)
+                .toList();
 
-        // TODO: look up all constructors and choose best one based on subtypes supertypes information
-        //  because there is a bug where subtype argument can not be found by explicit search by types
-        //  if B subtype A => B.class != A.class but method(A) can be replaced with method(B)
-        if (constructorArgs.size() > 0) {
-            instance = beanDefinition
-                    .getBeanClass()
-                    .getDeclaredConstructor(constructorArgsClasses)
-                    .newInstance(constructorArgs.toArray());
+        Constructor<?> primaryConstructor = null;
+
+        /* Ищем подходящий по типам конструктор */
+        for (var constructor : matchedConstructors) {
+            if (primaryConstructor != null)
+                break;
+
+            if (constructor.getParameterCount() == 0) {
+                primaryConstructor = constructor;
+                break;
+            }
+
+            var parameterTypes = constructor.getParameterTypes();
+
+            for (int i = 0; i < parameterTypes.length; i++) {
+                /* Проверка, является ли тип параметра текущего конструктора
+                таким же типом или супертипом для параметра бина */
+                if (!parameterTypes[i].isAssignableFrom(beanParameters[i]))
+                    break;
+                /* Если дошли до конца, то все типы в конструкторе сходятся */
+                if (i == parameterTypes.length - 1)
+                    primaryConstructor = constructor;
+            }
         }
-        else {
-            instance = beanDefinition.getBeanClass().getDeclaredConstructor().newInstance();
-        }
 
-        return instance;
+        if (primaryConstructor == null)
+            throw new NoSuchMethodException(String.format(
+                    "There is no any constructor for bean: %s with the specific arguments", bean.getBeanClass()));
+
+        var constructorParameters = argumentValuesToList(bean.getConstructorArguments().toArray(new AbstractValue[0]));
+
+        return primaryConstructor.newInstance(constructorParameters.toArray());
     }
 
-    private void injectDependencies(BeanDefinition bean, Object instance) throws Exception {
-        /* Sets property arguments */
-        Map<String, Field> fieldMap = new HashMap<>();
+    private void injectSetterDependencies(BeanDefinition bean, Object instance) throws Exception {
+        for (var property : bean.getPropertyArguments()) {
+            if (!property.isCorrect())
+                throw new IllegalStateException("Property has incorrect state: " + property);
 
-        for (Field filed : bean.getBeanClass().getDeclaredFields())
-            fieldMap.put(filed.getName(), filed);
+            Class<?> type = property.isBeanReference() ?
+                    applicationContext.getBeanDefinition(property.getBeanReference()).getBeanClass() :
+                    property.getType();
 
-        for (var arg : bean.getPropertyArguments()) {
-            if (!arg.isCorrect())
-                throw new IllegalStateException("Argument has incorrect state: " + arg);
-            else if ((arg.isBeanReference() && !fieldMap.containsKey(arg.getBeanReference())) ||
-                    (!arg.isBeanReference() && !fieldMap.containsKey(arg.getName())))
-                throw new NoSuchFieldException(String.format(
-                        "There is no field %s in class %s",
-                        arg.getName(),
-                        bean.getBeanClass()));
+            String setterName = SetterName.get(property.getName());
 
-            Object value = argumentValueToObject(arg);
+            var matchedMethods = Arrays.stream(bean.getBeanClass().getDeclaredMethods())
+                    .filter(method -> method.getParameterCount() == 1 &&
+                            method.getName().equals(setterName) &&
+                            method.getParameterTypes()[0].isAssignableFrom(type))
+                    .toList();
 
-            Field field = arg.isBeanReference() ? fieldMap.get(arg.getBeanReference()) : fieldMap.get(arg.getName());
-            field.setAccessible(true);
-            field.set(instance, value);
+            if (matchedMethods.isEmpty())
+                throw new NoSuchMethodException("No setter found for bean: " + bean);
+            else if (matchedMethods.size() > 1)
+                throw new IllegalStateException("Too many possible setters for bean: " + bean);
+
+            Object value = argumentValueToObject(property);
+
+            matchedMethods.stream().findFirst().get().invoke(instance, value);
         }
     }
 
@@ -91,9 +119,6 @@ public class BeanFactory {
     }
 
     private Object argumentValueToObject(AbstractValue value) throws Exception {
-        if (!value.isCorrect())
-            throw new IllegalStateException("Can not resolve is Argument value bean or primitive type: " + value);
-
         Object obj;
 
         if (value.isBeanReference()) {
@@ -125,5 +150,14 @@ public class BeanFactory {
         }
 
         return obj;
+    }
+
+    static class SetterName {
+        static String get(String str) {
+            StringBuilder builder = new StringBuilder(str);
+            builder.setCharAt(0, Character.toUpperCase(str.charAt(0)));
+            builder.insert(0, "set");
+            return builder.toString();
+        }
     }
 }

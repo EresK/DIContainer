@@ -1,10 +1,12 @@
 package di.container.configuration;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
 
-@Getter
-public class ConstructorValue {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ConstructorValue extends AbstractValue {
     private final Class<?> type;
     private final Object value;
     private final String beanReference;
@@ -17,12 +19,55 @@ public class ConstructorValue {
         this.beanReference = beanReference;
     }
 
-    public boolean isBeanReference() {
-        return type != null && beanReference != null && !beanReference.equals("") && value == null;
+    public ConstructorValue(Class<?> type, Object value) {
+        this.type = type;
+        this.value = value;
+        beanReference = null;
     }
 
+    public ConstructorValue(Class<?> type, String beanReference) {
+        this.type = type;
+        this.beanReference = beanReference;
+        value = null;
+    }
+
+    @JsonGetter("type")
+    public Class<?> getType() {
+        return type;
+    }
+
+    @JsonGetter("value")
+    @Override
+    public Object getValue() {
+        return value;
+    }
+
+    @JsonGetter("ref")
+    @Override
+    public String getBeanReference() {
+        return beanReference;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isBeanReference() {
+        return type != null &&
+                beanReference != null && !beanReference.equals("") &&
+                value == null;
+    }
+
+    @JsonIgnore
+    @Override
     public boolean isPrimitive() {
-        return type != null && value != null && beanReference == null;
+        return type != null &&
+                value != null &&
+                beanReference == null;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCorrect() {
+        return isBeanReference() ^ isPrimitive();
     }
 
     @Override

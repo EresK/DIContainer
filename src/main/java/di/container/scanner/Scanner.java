@@ -1,7 +1,7 @@
 package di.container.scanner;
 
-import di.container.annotations.Named;
 import di.container.annotations.Inject;
+import di.container.annotations.Named;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Parameter;
@@ -20,7 +20,7 @@ public class Scanner {
 
     public Class<?> getComponentByName(String name) {
         Set<Class<?>> components = getAllComponents();
-        for (Class<?> component: components) {
+        for (Class<?> component : components) {
             String componentName = component.getAnnotation(Named.class).value();
             if (componentName.isEmpty() || componentName.isBlank()) {
                 return null;

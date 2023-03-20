@@ -4,6 +4,7 @@ import di.container.context.ApplicationContext;
 import di.container.context.JsonApplicationContext;
 import mock.ClassBasedApplication;
 import mock.DefaultLogger;
+import mock.ILogger;
 import mock.InterfaceBasedApplication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -37,5 +38,19 @@ public class ApplicationContextTests {
 
         Assertions.assertNotNull(application.getLogger());
         Assertions.assertEquals(DefaultLogger.class, application.getLogger().getClass());
+    }
+
+    @Test
+    public void cyclicConfiguration() throws Exception {
+        ApplicationContext context = new JsonApplicationContext(
+                "src/test/resources/cyclicConfig.json");
+
+        InterfaceBasedApplication application = context.getBean(InterfaceBasedApplication.class);
+        ILogger logger = context.getBean(DefaultLogger.class);
+
+        Assertions.assertNotNull(application);
+        Assertions.assertNotNull(logger);
+
+        Assertions.assertNotSame(application.getLogger(), logger);
     }
 }

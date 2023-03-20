@@ -13,7 +13,7 @@ public class BeanFactory {
     private final ApplicationContext applicationContext;
     private final Map<Class<?>, Object> classObjectMap = new ConcurrentHashMap<>();
 
-    public BeanFactory(JsonApplicationContext context) {
+    public BeanFactory(ApplicationContext context) {
         applicationContext = context;
     }
 
@@ -30,6 +30,8 @@ public class BeanFactory {
 
         return instance;
     }
+
+
 
     private Object constructInstance(BeanDefinition beanDefinition) throws Exception {
         Object instance;

@@ -59,5 +59,12 @@ public class Scanner {
                 .orElse(null);
     }
 
+    public <T> Class<? extends T> getImplementationClass(Class<T> interfaceClass) throws Exception {
+        Set<Class<? extends T>> implementationClasses = scanner.getSubTypesOf(interfaceClass);
+        if (implementationClasses.size() != 1) {
+            throw new Exception("Interface has 0 or more than 1 implementations");
+        }
 
+        return implementationClasses.stream().findFirst().get();
+    }
 }

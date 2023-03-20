@@ -34,6 +34,11 @@ public class JsonApplicationContext implements ApplicationContext {
         return getInstanceByBeanDefinition(bean);
     }
 
+    @Override
+    public BeanDefinition getBeanDefinition(String name) throws Exception {
+        return listableBean.getBeanByName(name);
+    }
+
     private Object getInstanceByBeanDefinition(BeanDefinition bean) throws Exception {
         if (bean.isSingleton() && classObjectMap.containsKey(bean.getBeanClass()))
             return classObjectMap.get(bean.getBeanClass());

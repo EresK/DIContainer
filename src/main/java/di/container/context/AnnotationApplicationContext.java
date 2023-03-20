@@ -1,12 +1,13 @@
 package di.container.context;
 
 import di.container.annotations.Inject;
+import di.container.beans.BeanDefinition;
 import di.container.scanner.Scanner;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-public class AnnotationApplicationContext implements ApplicationContext{
+public class AnnotationApplicationContext implements ApplicationContext {
     private final Scanner scanner;
 
     public AnnotationApplicationContext(String pathPackage) {
@@ -21,7 +22,7 @@ public class AnnotationApplicationContext implements ApplicationContext{
         }
 
         T bean = (T) implementationClass.getDeclaredConstructor().newInstance();
-        for (Field field: Arrays.stream(implementationClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Inject.class)).toList()) {
+        for (Field field : Arrays.stream(implementationClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Inject.class)).toList()) {
             field.setAccessible(true);
             field.set(bean, this.getBean(field.getType()));
         }
@@ -31,6 +32,11 @@ public class AnnotationApplicationContext implements ApplicationContext{
 
     @Override
     public Object getBean(String name) throws Exception {
+        return null;
+    }
+
+    @Override
+    public BeanDefinition getBeanDefinition(String name) throws Exception {
         return null;
     }
 }

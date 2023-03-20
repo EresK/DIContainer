@@ -1,12 +1,14 @@
 package di.container.beans.factory;
 
 import di.container.beans.BeanDefinition;
-import di.container.configuration.ArgumentValue;
+import di.container.configuration.AbstractValue;
 import di.container.context.ApplicationContext;
-import di.container.context.JsonApplicationContext;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BeanFactory {
@@ -31,15 +33,16 @@ public class BeanFactory {
         return instance;
     }
 
-
-
     private Object constructInstance(BeanDefinition beanDefinition) throws Exception {
         Object instance;
 
         /* Gets instance and sets constructor arguments */
-        var constructorArgs = argumentValuesToList(beanDefinition.getConstructorArguments());
+        var constructorArgs = argumentValuesToList(beanDefinition.getConstructorArguments().toArray(new AbstractValue[0]));
         var constructorArgsClasses = constructorArgs.stream().map(Object::getClass).toList().toArray(new Class[0]);
 
+        // TODO: look up all constructors and choose best one based on subtypes supertypes information
+        //  because there is a bug where subtype argument can not be found by explicit search by types
+        //  if B subtype A => B.class != A.class but method(A) can be replaced with method(B)
         if (constructorArgs.size() > 0) {
             instance = beanDefinition
                     .getBeanClass()
@@ -60,7 +63,7 @@ public class BeanFactory {
         for (Field filed : bean.getBeanClass().getDeclaredFields())
             fieldMap.put(filed.getName(), filed);
 
-        for (ArgumentValue arg : bean.getPropertyArguments()) {
+        for (var arg : bean.getPropertyArguments()) {
             if (!arg.isCorrect())
                 throw new IllegalStateException("Argument has incorrect state: " + arg);
             else if ((arg.isBeanReference() && !fieldMap.containsKey(arg.getBeanReference())) ||
@@ -78,26 +81,26 @@ public class BeanFactory {
         }
     }
 
-    private List<Object> argumentValuesToList(List<ArgumentValue> argList) throws Exception {
+    private List<Object> argumentValuesToList(AbstractValue[] argList) throws Exception {
         List<Object> objects = new ArrayList<>();
 
-        for (ArgumentValue arg : argList)
-            objects.add(argumentValueToObject(arg));
+        for (AbstractValue value : argList)
+            objects.add(argumentValueToObject(value));
 
         return objects;
     }
 
-    private Object argumentValueToObject(ArgumentValue arg) throws Exception {
-        if (!arg.isCorrect())
-            throw new IllegalStateException("Can not resolve is ArgumentValue bean or primitive type: " + arg);
+    private Object argumentValueToObject(AbstractValue value) throws Exception {
+        if (!value.isCorrect())
+            throw new IllegalStateException("Can not resolve is Argument value bean or primitive type: " + value);
 
         Object obj;
 
-        if (arg.isBeanReference()) {
-            obj = applicationContext.getBean(arg.getBeanReference());
+        if (value.isBeanReference()) {
+            obj = applicationContext.getBean(value.getBeanReference());
         }
         else {
-            Object val = arg.getValue();
+            Object val = value.getValue();
 
             if (val instanceof String)
                 obj = String.valueOf(val);
@@ -118,7 +121,7 @@ public class BeanFactory {
             else if (val instanceof Character)
                 obj = Character.valueOf((Character) val);
             else
-                throw new IllegalStateException("ArgumentValue is neither a bean ref not a primitive type: " + arg);
+                throw new IllegalStateException("Argument value is neither a bean ref not a primitive type: " + value);
         }
 
         return obj;

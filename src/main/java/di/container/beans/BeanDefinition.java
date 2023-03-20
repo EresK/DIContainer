@@ -2,7 +2,8 @@ package di.container.beans;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import di.container.configuration.ArgumentValue;
+import di.container.configuration.ConstructorValue;
+import di.container.configuration.PropertyValue;
 import di.container.scope.Scope;
 
 import java.util.List;
@@ -14,8 +15,8 @@ public interface BeanDefinition {
     String getBeanName();
     Class<?> getBeanClass();
     Scope getBeanScope();
-    List<ArgumentValue> getConstructorArguments();
-    List<ArgumentValue> getPropertyArguments();
+    List<ConstructorValue> getConstructorArguments();
+    List<PropertyValue> getPropertyArguments();
     String getDescription();
 
     /* SETTERS */

@@ -1,7 +1,8 @@
 package di.container.beans;
 
 import com.fasterxml.jackson.annotation.*;
-import di.container.configuration.ArgumentValue;
+import di.container.configuration.ConstructorValue;
+import di.container.configuration.PropertyValue;
 import di.container.scope.Scope;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -19,8 +20,8 @@ public class Bean implements BeanDefinition {
     private boolean primary = false;
     private boolean lazyInit = false;
 
-    private List<ArgumentValue> constructorArguments = new ArrayList<>();
-    private List<ArgumentValue> propertyArguments = new ArrayList<>();
+    private List<ConstructorValue> constructorArguments = new ArrayList<>();
+    private List<PropertyValue> propertyArguments = new ArrayList<>();
 
     public Bean(String beanName, Class<?> beanClass) {
         this.beanName = beanName;
@@ -66,13 +67,13 @@ public class Bean implements BeanDefinition {
 
     @JsonGetter("constructor-args")
     @Override
-    public List<ArgumentValue> getConstructorArguments() {
+    public List<ConstructorValue> getConstructorArguments() {
         return constructorArguments;
     }
 
     @JsonGetter("property-args")
     @Override
-    public List<ArgumentValue> getPropertyArguments() {
+    public List<PropertyValue> getPropertyArguments() {
         return propertyArguments;
     }
 

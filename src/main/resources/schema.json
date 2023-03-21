@@ -11,107 +11,123 @@
         "description": "name of a bean",
         "type": "string"
       },
-
       "class": {
         "description": "java.class.of.a.Bean",
         "type": "string"
       },
-
       "scope": {
         "description": "singleton(default), prototype, thread",
         "default": "singleton",
-        "enum": ["singleton", "prototype", "thread"],
+        "enum": [
+          "singleton",
+          "prototype",
+          "thread"
+        ],
         "type": "string"
       },
-
       "primary": {
         "description": "defines a primary implementation for specific interface",
         "default": false,
         "type": "boolean"
       },
-
       "lazy-init": {
         "description": "defines lazy initialization for a singleton bean",
         "default": false,
         "type": "boolean"
       },
-
       "constructor-args": {
         "description": "defines constructor arguments as java primitives/string, or reference to another bean",
         "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "description": "java.type.of.an.Primitive or String",
-                "type": "string"
+        "items": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "description": "java.type.of.an.Primitive or String",
+                  "type": "string"
+                },
+                "value": {
+                  "description": "value of the type",
+                  "type": "string"
+                }
               },
-              "value": {
-                "description": "value of the type",
-                "type": "string"
-              }
+              "required": [
+                "type",
+                "value"
+              ]
             },
-            "required": ["type", "value"]
-          },
-
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "description": "java.path.to.Bean",
-                "type": "string"
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "description": "java.path.to.Bean",
+                  "type": "string"
+                },
+                "ref": {
+                  "description": "name of another bean",
+                  "type": "string"
+                }
               },
-              "ref": {
-                "description": "name of another bean",
-                "type": "string"
-              }
-            },
-            "required": ["type", "ref"]
-          }
-        ]
+              "required": [
+                "type",
+                "ref"
+              ]
+            }
+          ]
+        }
       },
-
       "property-args": {
         "description": "defines property arguments as java primitives/string, or reference to another bean",
         "type": "array",
-        "items": [
-          {
-            "type": "object",
-            "properties": {
-              "name": {
-                "description": "name of a field",
-                "type": "string"
+        "items": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "name of a field",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "java.type.to.Primitive",
+                  "type": "string"
+                },
+                "value": {
+                  "description": "value of the type",
+                  "type": "string"
+                }
               },
-              "type": {
-                "description": "java.type.to.Primitive",
-                "type": "string"
-              },
-              "value": {
-                "description": "value of the type",
-                "type": "string"
-              }
+              "required": [
+                "name",
+                "type",
+                "value"
+              ]
             },
-            "required": ["name", "type", "value"]
-          },
-
-          {
-            "type": "object",
-            "properties": {
-              "name": {
-                "description": "name of another bean",
-                "type": "string"
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "name of another bean",
+                  "type": "string"
+                },
+                "ref": {
+                  "description": "java.type.to.Bean",
+                  "type": "string"
+                }
               },
-              "ref": {
-                "description": "java.type.to.Bean",
-                "type": "string"
-              }
-            },
-            "required": ["name", "ref"]
-          }
-        ]
+              "required": [
+                "name",
+                "ref"
+              ]
+            }
+          ]
+        }
       }
     },
-    "required": ["name", "class"]
+    "required": [
+      "name",
+      "class"
+    ]
   }
 }

@@ -84,7 +84,12 @@ public class AnnotationApplicationContext implements ApplicationContext{
         List<Method> methods = scanner.getAllInjectedMethods(implementationClass);
         for(Method m: methods) {
             m.setAccessible(true);
-            Class<?> type = Arrays.stream(m.getParameterTypes()).findFirst().get();
+            Class<T> type;
+            if (m.isAnnotationPresent(Named.class)) {
+                type = (Class<T>) idForNamed.get(m.getDeclaredAnnotation(Named.class).value());
+            } else {
+                type = (Class<T>) Arrays.stream(m.getParameterTypes()).findFirst().get();
+            }
             m.invoke(bean, getBean(type));
         }
 

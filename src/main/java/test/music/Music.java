@@ -1,5 +1,5 @@
 package test.music;
 
-public class Music {
-
+public interface Music {
+    String getMusic();
 }

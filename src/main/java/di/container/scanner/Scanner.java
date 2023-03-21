@@ -14,13 +14,13 @@ public class Scanner {
         this.scanner = new Reflections(packagePath);
     }
 
-    public Set<Class<?>> getAllComponents() {
+    public Set<Class<?>> getAllNamedClasses() {
         return scanner.getTypesAnnotatedWith(Named.class);
     }
 
     public Class<?> getComponentByName(String name) {
-        Set<Class<?>> components = getAllComponents();
-        for (Class<?> component : components) {
+        Set<Class<?>> components = getAllNamedClasses();
+        for (Class<?> component: components) {
             String componentName = component.getAnnotation(Named.class).value();
             if (componentName.isEmpty() || componentName.isBlank()) {
                 return null;
@@ -36,20 +36,20 @@ public class Scanner {
         return null;
     }
 
-    public Class<?> getInjectableComponent(Parameter parameter) {
-        if (parameter.isAnnotationPresent(Inject.class)) {
-            String name = parameter.getAnnotation(Inject.class).value();
-            if (!name.isEmpty() && !name.isBlank()) {
-                return getComponentByName(name);
-            }
-        }
-
-        Class<?> type = parameter.getType();
-        if (type.isInterface()) {
-            return getImplementation(type);
-        }
-        return type;
-    }
+//    public Class<?> getInjectableComponent(Parameter parameter) {
+//        if (parameter.isAnnotationPresent(Inject.class)) {
+//            String name = parameter.getAnnotation(Inject.class);
+//            if (!name.isEmpty() && !name.isBlank()) {
+//                return getComponentByName(name);
+//            }
+//        }
+//
+//        Class<?> type = parameter.getType();
+//        if (type.isInterface()) {
+//            return getImplementation(type);
+//        }
+//        return type;
+//    }
 
     public Class<?> getImplementation(Class<?> type) {
         return scanner.getSubTypesOf(type)

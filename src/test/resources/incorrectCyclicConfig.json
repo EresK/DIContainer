@@ -1,0 +1,23 @@
+[
+  {
+    "name": "interfaceBasedApp",
+    "class": "mock.InterfaceBasedApplication",
+    "constructor-args": [
+      {
+        "type": "mock.DefaultLogger",
+        "ref": "logger"
+      }
+    ]
+  },
+  {
+    "name": "logger",
+    "class": "mock.DefaultLogger",
+    "scope": "prototype",
+    "constructor-args": [
+      {
+        "type": "mock.InterfaceBasedApplication",
+        "ref": "interfaceBasedApp"
+      }
+    ]
+  }
+]

@@ -1,8 +1,7 @@
-package test.music3;
+package test.music4;
 
 import di.container.annotations.Named;
-
-@Named("pop")
+@Named
 public class PopMusic implements Music {
     @Override
     public String getGenre() {

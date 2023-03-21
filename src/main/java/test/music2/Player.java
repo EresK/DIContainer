@@ -1,16 +1,12 @@
-package test.music;
+package test.music2;
 
 import di.container.annotations.Inject;
 import di.container.annotations.Named;
+import test.music2.Music;
 
 public class Player {
-
-    private Music music;
-
     @Inject
-    public Player(@Named("classicalMusic") Music music) {
-        this.music = music;
-    }
+    private @Named("classicalMusic") Music music;
 
     public Music getMusic() {
         return music;

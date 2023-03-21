@@ -8,6 +8,7 @@ import javassist.tools.reflect.Reflection;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,6 +79,13 @@ public class AnnotationApplicationContext implements ApplicationContext{
         for (Field field: Arrays.stream(implementationClass.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Inject.class) && !field.isAnnotationPresent(Named.class)).toList()) {
             field.setAccessible(true);
             field.set(bean, this.getBean(field.getType()));
+        }
+
+        List<Method> methods = scanner.getAllInjectedMethods(implementationClass);
+        for(Method m: methods) {
+            m.setAccessible(true);
+            Class<?> type = Arrays.stream(m.getParameterTypes()).findFirst().get();
+            m.invoke(bean, getBean(type));
         }
 
         return bean;

@@ -4,7 +4,10 @@ import di.container.annotations.Inject;
 import di.container.annotations.Named;
 import org.reflections.Reflections;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class Scanner {
@@ -66,5 +69,17 @@ public class Scanner {
         }
 
         return implementationClasses.stream().findFirst().get();
+    }
+
+    public List<Method> getAllInjectedMethods(Class<?> clazz) {
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        List<Method> injectedMethods = new ArrayList<>();
+        for (Method m: declaredMethods) {
+            if (m.isAnnotationPresent(Inject.class) && m.getName().startsWith("set")) {
+                injectedMethods.add(m);
+            }
+        }
+
+        return injectedMethods;
     }
 }

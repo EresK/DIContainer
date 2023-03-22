@@ -1,0 +1,26 @@
+[
+  {
+    "name": "classBasedApp",
+    "class": "mock.ClassBasedApplication",
+    "constructor-args": [
+      {
+        "type": "mock.DefaultLogger",
+        "value": "some string value",
+        "ref": "logger"
+      }
+    ],
+    "property-args": [
+      {
+        "name": "logger",
+        "type": "mock.DefaultLogger",
+        "value": true,
+        "ref": "logger"
+      }
+    ]
+  },
+  {
+    "name": "logger",
+    "class": "mock.DefaultLogger",
+    "scope": "prototype"
+  }
+]

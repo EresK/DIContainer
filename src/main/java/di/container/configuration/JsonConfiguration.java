@@ -37,7 +37,9 @@ public class JsonConfiguration implements Configuration {
 
         BeanDefinition[] beans = mapper.readValue(configuration, BeanDefinition[].class);
 
+        /* checking correctness */
         checkCyclicDependencies(beans);
+        checkParameterCorrectness(beans);
 
         return Arrays.stream(beans).toList();
     }
@@ -77,6 +79,15 @@ public class JsonConfiguration implements Configuration {
                             "Met incorrect cycle in configuration: %s, with bean: %s",
                             configurationPath, bean.getBeanName()));
             }
+        }
+    }
+
+    private void checkParameterCorrectness(BeanDefinition[] beans) {
+        for (BeanDefinition bean : beans) {
+            if (bean.getConstructorArguments().stream().anyMatch(arg -> !arg.isCorrect()) ||
+                    bean.getPropertyArguments().stream().anyMatch(arg -> !arg.isCorrect()))
+                throw new IllegalStateException(String.format(
+                        "Bean: %s has incorrect state of the argument", bean.getBeanName()));
         }
     }
 }

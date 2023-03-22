@@ -37,5 +37,8 @@ public class ConfigurationTests {
 
         Assertions.assertThrows(IllegalStateException.class, () ->
                 new JsonConfiguration("src/test/resources/incorrectCyclicConfig.json").getBeanDefinitions());
+
+        Assertions.assertThrows(IllegalStateException.class, () ->
+                new JsonConfiguration("src/test/resources/incorrectParametersConfig.json").getBeanDefinitions());
     }
 }

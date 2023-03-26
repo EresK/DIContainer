@@ -4,34 +4,50 @@ import di.container.beans.BeanDefinition;
 import di.container.configuration.value.AbstractValue;
 import di.container.configuration.value.ConstructorValue;
 import di.container.context.ApplicationContext;
+import di.container.scope.Scope;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class BeanFactory {
     private final ApplicationContext applicationContext;
-    private final Map<Class<?>, Object> classObjectMap = new ConcurrentHashMap<>();
+    private final BeanRecorder beanRecorder;
 
     public BeanFactory(ApplicationContext context) {
         applicationContext = context;
+        beanRecorder = new BeanRecorder();
     }
 
     public Object getInstance(BeanDefinition bean) throws Exception {
-        if (bean.isSingleton() && classObjectMap.containsKey(bean.getBeanClass()))
-            return classObjectMap.get(bean.getBeanClass());
+        return switch (bean.getBeanScope()) {
+            case SINGLETON, THREAD -> {
+                Scope scope = bean.getBeanScope();
 
-        Object instance = constructInstance(bean);
+                Object instance = (scope == Scope.SINGLETON) ?
+                        beanRecorder.getSingletonBean(bean.getBeanClass()) :
+                        beanRecorder.getThreadBean(Thread.currentThread(), bean.getBeanClass());
 
-        if (bean.isSingleton())
-            classObjectMap.put(bean.getBeanClass(), instance);
+                if (instance != null)
+                    yield instance;
 
-        injectSetterDependencies(bean, instance);
+                instance = constructInstance(bean);
 
-        return instance;
+                if (scope == Scope.SINGLETON)
+                    beanRecorder.registerSingletonBean(bean.getBeanClass(), instance);
+                else
+                    beanRecorder.registerThreadBean(Thread.currentThread(), bean.getBeanClass(), instance);
+
+                injectSetterDependencies(bean, instance);
+                yield instance;
+            }
+            case PROTOTYPE -> {
+                Object instance = constructInstance(bean);
+                injectSetterDependencies(bean, instance);
+                yield instance;
+            }
+        };
     }
 
     private Object constructInstance(BeanDefinition bean) throws Exception {

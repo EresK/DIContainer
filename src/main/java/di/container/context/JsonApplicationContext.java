@@ -6,14 +6,12 @@ import di.container.beans.factory.BeanFactory;
 import di.container.configuration.Configuration;
 import di.container.configuration.JsonConfiguration;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 public class JsonApplicationContext implements ApplicationContext {
     private final BeanFactory beanFactory;
     private final Configuration configuration;
     private final ListableBean listableBean;
-    private final Map<Class<?>, Object> classObjectMap = new ConcurrentHashMap<>();
 
     public JsonApplicationContext(String configurationPath) throws Exception {
         beanFactory = new BeanFactory(this);
@@ -24,8 +22,13 @@ public class JsonApplicationContext implements ApplicationContext {
 
     @Override
     public <T> T getBean(Class<T> requiredType) throws Exception {
-        BeanDefinition bean = listableBean.getBeanByType(requiredType);
-        return (T) getInstanceByBeanDefinition(bean);
+        List<BeanDefinition> beans = listableBean.getBeansOfType(requiredType);
+
+        if (beans.size() != 1)
+            throw new IllegalStateException(String.format(
+                    "Can not find or resolve BeanDefinitions, beans: %d, type: %s", beans.size(), requiredType));
+
+        return (T) getInstanceByBeanDefinition(beans.stream().findFirst().get());
     }
 
     @Override
@@ -40,15 +43,7 @@ public class JsonApplicationContext implements ApplicationContext {
     }
 
     private Object getInstanceByBeanDefinition(BeanDefinition bean) throws Exception {
-        if (bean.isSingleton() && classObjectMap.containsKey(bean.getBeanClass()))
-            return classObjectMap.get(bean.getBeanClass());
-
-        Object obj = beanFactory.getInstance(bean);
-
-        if (bean.isSingleton())
-            classObjectMap.put(bean.getBeanClass(), obj);
-
-        return obj;
+        return beanFactory.getInstance(bean);
     }
 
     private void preInitialization() throws Exception {

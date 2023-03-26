@@ -29,4 +29,8 @@ public class ListableBean {
 
         return beans.stream().findFirst().get();
     }
+
+    public List<BeanDefinition> getBeansOfType(Class<?> requiredType) {
+        return beanList.stream().filter(bean -> requiredType.isAssignableFrom(bean.getBeanClass())).toList();
+    }
 }

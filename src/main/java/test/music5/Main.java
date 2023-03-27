@@ -1,4 +1,4 @@
-package test.music2;
+package test.music5;
 
 import di.container.context.AnnotationApplicationContext;
 

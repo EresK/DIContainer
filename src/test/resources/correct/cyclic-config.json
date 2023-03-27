@@ -1,0 +1,32 @@
+[
+  {
+    "name": "server",
+    "class": "di.container.example.server.JavaWebServer",
+    "constructor-args": [
+      {
+        "type": "java.lang.String",
+        "value": "active"
+      }
+    ],
+    "property-args": [
+      {
+        "name": "dataBase",
+        "ref": "dataBase"
+      }
+    ]
+  },
+  {
+    "name": "dataBase",
+    "class": "di.container.example.database.EmbeddedDataBase",
+    "constructor-args": [
+      {
+        "type": "di.container.example.server.JavaWebServer",
+        "ref": "server"
+      },
+      {
+        "type": "java.lang.Integer",
+        "value": "1"
+      }
+    ]
+  }
+]

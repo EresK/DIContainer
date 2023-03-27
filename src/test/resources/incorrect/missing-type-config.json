@@ -1,0 +1,11 @@
+[
+  {
+    "name": "server",
+    "constructor-args": [
+      {
+        "type": "java.lang.String",
+        "value": "active"
+      }
+    ]
+  }
+]

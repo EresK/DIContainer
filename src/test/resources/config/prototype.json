@@ -1,0 +1,13 @@
+[
+  {
+    "name": "mySQL",
+    "class": "di.container.example.database.MySQLDataBase",
+    "scope": "prototype",
+    "constructor-args": [
+      {
+        "type": "java.lang.Integer",
+        "value": 8
+      }
+    ]
+  }
+]

@@ -5,12 +5,39 @@ import di.container.context.JsonApplicationContext;
 import di.container.example.database.IDataBase;
 import di.container.example.database.MySQLDataBase;
 import di.container.example.database.PostgresDataBase;
+import di.container.example.server.IWebServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ApplicationContextTests {
+    @Test
+    public void basicConfiguration() {
+        Assertions.assertDoesNotThrow(() -> {
+            ApplicationContext context = new JsonApplicationContext(
+                    "src/test/resources/config/basic-config.json");
+
+            IWebServer firstServer = context.getBean(IWebServer.class);
+            IWebServer secondServer = context.getBean(IWebServer.class);
+
+            IDataBase dataBase = (IDataBase) context.getBean("dataBase");
+
+            Assertions.assertNotNull(firstServer);
+            Assertions.assertNotNull(secondServer);
+            Assertions.assertNotNull(dataBase);
+
+            Assertions.assertNotSame(firstServer, secondServer);
+
+            Assertions.assertSame(dataBase, context.getBean(IDataBase.class));
+            Assertions.assertSame(firstServer.getDataBase(), dataBase);
+            Assertions.assertSame(firstServer.getDataBase(), secondServer.getDataBase());
+
+            Assertions.assertEquals("Node JS web server status: active", firstServer.getStatus());
+            Assertions.assertEquals("Node JS web server status: active", secondServer.getStatus());
+        });
+    }
+
     @Test
     public void singletonScope() {
         Assertions.assertDoesNotThrow(() -> {

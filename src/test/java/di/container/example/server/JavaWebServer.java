@@ -15,6 +15,11 @@ public class JavaWebServer implements IWebServer {
         this.status = status;
     }
 
+    @Override
+    public IDataBase getDataBase() {
+        return dataBase;
+    }
+
     public void setDataBase(IDataBase dataBase) {
         this.dataBase = dataBase;
     }

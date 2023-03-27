@@ -12,6 +12,15 @@ public class NodeJSWebServer implements IWebServer {
     }
 
     @Override
+    public IDataBase getDataBase() {
+        return dataBase;
+    }
+
+    public void setDataBase(IDataBase dataBase) {
+        this.dataBase = dataBase;
+    }
+
+    @Override
     public String getStatus() {
         return "Node JS web server status: " + status;
     }

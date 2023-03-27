@@ -1,0 +1,12 @@
+[
+  {
+    "name": "postgres",
+    "class": "di.container.example.database.PostgresDataBase",
+    "constructor-args": [
+      {
+        "type": "java.lang.Integer",
+        "value": 15
+      }
+    ]
+  }
+]

@@ -49,7 +49,12 @@
                 },
                 "value": {
                   "description": "value of the type",
-                  "type": "string"
+                  "type": [
+                    "string",
+                    "integer",
+                    "number",
+                    "boolean"
+                  ]
                 }
               },
               "required": [
@@ -95,7 +100,12 @@
                 },
                 "value": {
                   "description": "value of the type",
-                  "type": "string"
+                  "type": [
+                    "string",
+                    "integer",
+                    "number",
+                    "boolean"
+                  ]
                 }
               },
               "required": [

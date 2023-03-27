@@ -1,5 +1,6 @@
 package di.container.beans.factory;
 
+import com.google.common.primitives.Primitives;
 import di.container.beans.BeanDefinition;
 import di.container.configuration.value.AbstractValue;
 import di.container.configuration.value.ConstructorValue;
@@ -80,7 +81,7 @@ public class BeanFactory {
             for (int i = 0; i < parameterTypes.length; i++) {
                 /* Проверка, является ли тип параметра текущего конструктора
                 таким же типом или супертипом для параметра бина */
-                if (!parameterTypes[i].isAssignableFrom(beanParameters[i]))
+                if (!Primitives.wrap(parameterTypes[i]).isAssignableFrom(beanParameters[i]))
                     break;
                 /* Если дошли до конца, то все типы в конструкторе сходятся */
                 if (i == parameterTypes.length - 1)

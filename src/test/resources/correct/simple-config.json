@@ -1,0 +1,26 @@
+[
+  {
+    "name": "server",
+    "class": "di.container.example.server.JavaWebServer",
+    "constructor-args": [
+      {
+        "type": "di.container.example.database.PostgresDataBase",
+        "ref": "dataBase"
+      },
+      {
+        "type": "java.lang.String",
+        "value": "active"
+      }
+    ]
+  },
+  {
+    "name": "dataBase",
+    "class": "di.container.example.database.PostgresDataBase",
+    "constructor-args": [
+      {
+        "type": "java.lang.Integer",
+        "value": "15"
+      }
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "name": "server",
+    "class": "di.container.example.server.JavaWebServer",
+    "constructor-args": [
+      {
+        "type": "java.lang.String",
+        "ref": "someBean",
+        "value": "active"
+      }
+    ]
+  }
+]

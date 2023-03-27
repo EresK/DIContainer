@@ -21,13 +21,13 @@ dependencies {
 
     implementation 'org.reflections:reflections:0.10.2'
 
-//    implementation 'org.springframework:spring-core:5.3.25'
-//    implementation 'org.springframework:spring-beans:5.3.25'
-    implementation 'org.springframework.boot:spring-boot:2.7.8'
+//    implementation 'org.springframework.boot:spring-boot:2.7.8'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
 
     implementation 'com.networknt:json-schema-validator:1.0.78'
+
+    implementation 'com.google.guava:guava:31.1-jre'
 }
 
 test {

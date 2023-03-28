@@ -1,7 +1,6 @@
-package test.music4;
+package testAnnotations.music4;
 
 import di.container.annotations.Inject;
-import di.container.annotations.Named;
 
 public class Player {
     private Music music;

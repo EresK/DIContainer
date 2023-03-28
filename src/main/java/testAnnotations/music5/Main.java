@@ -1,10 +1,11 @@
-package test.music3;
+package testAnnotations.music5;
 
 import di.container.context.AnnotationApplicationContext;
+
 public class Main {
     public static void main(String[] argc) throws Exception {
-        AnnotationApplicationContext context = new AnnotationApplicationContext("test.music3");
+        AnnotationApplicationContext context = new AnnotationApplicationContext("test.music5");
         Player player = context.getBean(Player.class);
-        System.out.print(player.getMusic().getGenre());
+        player.getMusic();
     }
 }

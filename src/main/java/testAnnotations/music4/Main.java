@@ -1,4 +1,4 @@
-package test.music4;
+package testAnnotations.music4;
 
 import di.container.context.AnnotationApplicationContext;
 
@@ -9,7 +9,8 @@ public class Main {
             Player player = context.getBean(Player.class);
             System.out.print(player.getMusic().getGenre());
         } catch (Exception e) {
-            System.out.print("Several realization of Music interface without Named annotation");
+            System.out.println("Several realization of Music interface without Named annotation");
+            System.out.println(e);
         }
     }
 }

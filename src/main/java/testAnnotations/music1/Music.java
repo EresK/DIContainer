@@ -1,4 +1,4 @@
-package test.music1;
+package testAnnotations.music1;
 
 public interface Music {
     String getMusic();

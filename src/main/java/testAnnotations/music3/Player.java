@@ -1,14 +1,12 @@
-package test.music1;
-
+package testAnnotations.music3;
 import di.container.annotations.Inject;
 import di.container.annotations.Named;
 
 public class Player {
-
     private Music music;
 
     @Inject
-    public Player(@Named("classicalMusic") Music music) {
+    public void setMusic(@Named("pop") Music music) {
         this.music = music;
     }
 

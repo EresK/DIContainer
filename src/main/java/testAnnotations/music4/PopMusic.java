@@ -1,4 +1,4 @@
-package test.music4;
+package testAnnotations.music4;
 
 import di.container.annotations.Named;
 @Named

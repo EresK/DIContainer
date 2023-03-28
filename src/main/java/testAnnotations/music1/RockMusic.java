@@ -1,8 +1,8 @@
-package test.music1;
+package testAnnotations.music1;
 
 import di.container.annotations.Named;
 
-@Named("rockMusic")
+@Named("rock")
 public class RockMusic implements Music{
     @Override
     public String getMusic() {

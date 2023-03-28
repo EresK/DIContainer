@@ -1,4 +1,4 @@
-package test.music2;
+package testAnnotations.music2;
 
 public interface Music {
     public void getGenre();

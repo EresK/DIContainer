@@ -10,8 +10,7 @@ public class Player {
         this.musicProvider = musicProvider;
     }
 
-    public void getMusic() throws Exception {
-        musicProvider.get().getGenre();
-        musicProvider.get().getGenre();
+    public Music getMusic() throws Exception {
+        return musicProvider.get();
     }
 }
